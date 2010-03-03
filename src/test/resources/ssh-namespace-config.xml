@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stdio="http://www.mulesource.org/schema/mule/stdio/2.2"
+	xmlns:ssh="http://www.mulesource.org/schema/mule/ssh/2.2"
+	xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+	xsi:schemaLocation="
+	http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+	http://www.mulesource.org/schema/mule/ssh/2.2 http://www.mulesource.org/schema/mule/ssh/2.2/mule-ssh.xsd
+	http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+	http://www.mulesource.org/schema/mule/stdio/2.2 http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd
+	">
+
+	<ssh:connector name="sshConnector" host="localhost" kexTimeout="3000"
+		port="22" loginId="user" password="keypass" privateKeyPath="./src/test/resources/test.id_rsa"/>
+	<vm:connector name="vmconnector" />
+	<model name="SshTest">
+		<service name="SshService">
+			<inbound>
+				<inbound-endpoint address="vm://test" >
+					<response-transformers>
+						<object-to-string-transformer/>
+					</response-transformers>
+				</inbound-endpoint>
+			</inbound>
+			<echo-component/>
+			<outbound>
+				<pass-through-router>
+					<ssh:outbound-endpoint name="ssh-out" ssh="SEND" useSudo="true" sudoPassword="soacmule"
+					 synchronous="true" responseTimeout="0"/>
+				</pass-through-router>
+			</outbound>
+		</service>
+	</model>
+</mule>

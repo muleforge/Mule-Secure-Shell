@@ -1,0 +1,40 @@
+<!--
+Assembly descriptor for the full distribution.
+-->
+<assembly>
+    <id>Ssh</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>src</directory>
+            <outputDirectory>src</outputDirectory>
+        </fileSet>
+        <!-- If a licenses directory is present, copy it.  this would contain text files describing the licenses for each
+             non-Mule dependencies -->
+        <fileSet>
+            <directory>licenses</directory>
+            <outputDirectory>licenses</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>target/lib</outputDirectory>
+            <scope>runtime</scope>
+            <!-- Include only the non-Mule libraries needed by your application -->
+            <includes>
+                <!-- Make sure we include this project's artifact -->
+                <include>org.mule.transports:mule-transport-ssh</include>
+
+                <!--
+                Add any 3rd party libraries here.  Note you can use wildcards i.e.
+                -->
+                <include>commons-ssh:commons-ssh</include>
+                <include>com.jcraft:jzlib</include>
+                <include>com.jcraft:jsch</include>
+            </includes>
+
+        </dependencySet>
+    </dependencySets>
+</assembly>

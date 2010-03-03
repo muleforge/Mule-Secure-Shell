@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesource.org/schema/mule/ssh/2.2"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mule="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns:schemadoc="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+	targetNamespace="http://www.mulesource.org/schema/mule/ssh/2.2"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+	<xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.2"
+		schemaLocation="http://www.mulesource.org/schema/mule/core/2.2/mule.xsd" />
+	<xsd:import namespace="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+		schemaLocation="http://www.mulesource.org/schema/mule/schemadoc/2.2/mule-schemadoc.xsd" />
+
+	<xsd:annotation>
+		<xsd:documentation>execution remote ssh command</xsd:documentation>
+		<xsd:appinfo>
+			<schemadoc:short-name>Ssh</schemadoc:short-name>
+			<schemadoc:page-title>Ssh Transport</schemadoc:page-title>
+			<schemadoc:transport-features
+				receiveEvents="false" dispatchEvents="false" responseEvents="true"
+				requestEvents="false" transactions="false" streaming="false">
+				<schemadoc:inboundMEPs in-only="${receiver}"
+					in-optional-out="true" in-out="true" />
+				<schemadoc:outboundMEPs out-only="true"
+					out-in="true" out-optional-in="true" />
+			</schemadoc:transport-features>
+		</xsd:appinfo>
+	</xsd:annotation>
+
+	<xsd:element name="connector" type="sshConnectorType"
+		substitutionGroup="mule:abstract-connector">
+		<xsd:annotation>
+			<xsd:documentation>
+				execution remote ssh command
+            </xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+
+	<xsd:complexType name="sshConnectorType">
+		<xsd:complexContent>
+			<xsd:extension base="mule:connectorType">
+
+				<xsd:attribute name="host" type="mule:nonBlankString" use="required" >
+					<xsd:annotation>
+						<xsd:documentation>
+							ssh host address or host name
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="mule:substitutablePortNumber" use="optional" default="22">
+					<xsd:annotation>
+						<xsd:documentation>
+							ssh server port
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="loginId" type="mule:nonBlankString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							login user id
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="password" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							login user password (Password auth) or private key password (if privateKeyPath is setted)
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="privateKeyPath" type="mule:nonBlankString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							private key file path (i.e. ./id_rsa)
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+
+				<xsd:attribute name="kexTimeout" type="mule:substitutableInt" use="optional" default="5000">
+					<xsd:annotation>
+						<xsd:documentation>
+							SSH2 key exchange timeout.
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+								
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+
+    <xsd:element name="outbound-endpoint" type="outboundEndpointType" substitutionGroup="mule:abstract-outbound-endpoint"/>
+    <xsd:complexType name="outboundEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:outboundEndpointType">
+                <xsd:attributeGroup ref="addressAttributes"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="endpoint" type="globalEndpointType" substitutionGroup="mule:abstract-global-endpoint"/>
+    <xsd:complexType name="globalEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:globalEndpointType">
+                <xsd:attributeGroup ref="addressAttributes"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:attributeGroup name="addressAttributes">
+    	<xsd:attribute name="ssh" fixed="SEND" use="required">
+    	    <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="SEND"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    	
+    	<xsd:attribute name="sudoPassword" type="mule:nonBlankString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					sudo command passwrod
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="useSudo" type="mule:substitutableBoolean"
+			use="optional" >
+			<xsd:annotation>
+				<xsd:documentation>
+					weather to execute on sudo.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+
+    </xsd:attributeGroup>
+
+</xsd:schema>
