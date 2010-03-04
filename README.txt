@@ -14,3 +14,6 @@ and the infomation on how to use MuleForge, please see following:
 http://www.mulesoft.org/display/MULEFORGE/Help
 
 
+
+This product includes software developed by
+CommonsSSH Project (http://commons-ssh.sourceforge.net/).

@@ -37,7 +37,7 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         
         assertTrue(c.isStarted());
         
-        //assertEquals("158.201.106.212", c.getHost());
+        assertEquals("localhost", c.getHost());
         
         assertEquals(22, c.getPort());
         
@@ -45,7 +45,8 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         
         assertEquals(PublicKeyAuthenticationOptions.class, 
         		c.getAuthOptions().getClass());
-        assertEquals("user", ((PublicKeyAuthenticationOptions)c.getAuthOptions()).login);
+        
+        //assertEquals("user", ((PublicKeyAuthenticationOptions)c.getAuthOptions()).login);
 
         
         OutboundEndpoint endpoint = (OutboundEndpoint) muleContext.getRegistry().lookupObject("ssh-out");
@@ -55,7 +56,9 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         //valid to replace from 'ssh="SEND"' to 'address="ssh://ssh.out"'
         assertEquals("ssh.out", endpoint.getEndpointURI().getAddress());
         
-        assertEquals("soacmule", endpoint.getProperty("sudoPassword"));
+        assertEquals("sudopwd", endpoint.getProperty("sudoPassword"));
+        
+        assertEquals(4000, endpoint.getResponseTimeout());
         
         assertEquals(true, endpoint.isSynchronous());
         

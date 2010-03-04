@@ -50,7 +50,7 @@ public class SshConnectorFactoryTestCase extends FunctionalTestCase
 	protected String getConfigResources()
 	{
 		// TODO Auto-generated method stub
-		return "src/test/resources/ssh-namespace-config.xml";
+		return "ssh-namespace-config.xml";
 	}
 
 

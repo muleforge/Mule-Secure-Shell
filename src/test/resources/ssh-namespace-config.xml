@@ -11,7 +11,7 @@
 	">
 
 	<ssh:connector name="sshConnector" host="localhost" kexTimeout="3000"
-		port="22" loginId="user" password="keypass" privateKeyPath="./src/test/resources/test.id_rsa"/>
+		port="22" loginId="user" password="keypass" privateKeyPath="./key/test.id_rsa"/>
 	<vm:connector name="vmconnector" />
 	<model name="SshTest">
 		<service name="SshService">
@@ -25,8 +25,8 @@
 			<echo-component/>
 			<outbound>
 				<pass-through-router>
-					<ssh:outbound-endpoint name="ssh-out" ssh="SEND" useSudo="true" sudoPassword="soacmule"
-					 synchronous="true" responseTimeout="0"/>
+					<ssh:outbound-endpoint name="ssh-out" ssh="SEND" useSudo="true" sudoPassword="sudopwd"
+					 synchronous="true" responseTimeout="4000"/>
 				</pass-through-router>
 			</outbound>
 		</service>
