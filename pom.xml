@@ -10,9 +10,25 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<description>execution remote ssh command</description>
 
+	<licenses>
+		<license>
+			<name>CPAL v1.0</name>
+			<url>http://www.mulesoft.org/display/SSH/CPAL</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Osaka Gas Information System Research Institute Co.,Ltd.</name>
+		<url>http://www.ogis-ri.co.jp/</url>
+	</organization>
+
+
 	<url>http://www.mulesoft.org/display/SSH/Home</url>
 
 	<properties>
+		<shortId>SSH</shortId>
+		<productName>ssh</productName>
+	
 		<mule.version>2.2.1</mule.version>
 		<mule.test.version>2.2.0</mule.test.version>
 		<!-- Tools properties -->
@@ -22,6 +38,48 @@
         <jdk15Name>J2SE-1.5</jdk15Name>
         <jdk6Name>JavaSE-1.6</jdk6Name>
 	</properties>
+
+	<issueManagement>
+		<system>Jira</system>
+		<url>http://mule.mulesource.org/jira/browse/${shortId}</url>
+	</issueManagement>
+
+    <ciManagement>
+        <system>Bamboo</system>
+        <url>http://bamboo.muleforge.org/browse/${shortId}</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<configuration>
+					<address>
+						dev@ssh.muleforge.org
+					</address>
+				</configuration>
+			</notifier>
+		</notifiers>
+    </ciManagement>
+
+    <scm>
+        <connection>scm:svn:http://svn.muleforge.org/ssh/trunk</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/ssh/trunk</developerConnection>
+        <!-- <url>http://svn.ssh.muleforge.org/</url> -->
+    </scm>
+
+	<distributionManagement>
+		<repository>
+			<id>muleforge.webdav.releases</id>
+			<url>dav:https://dav.muleforge.org/repository/${productName}</url>
+		</repository>
+		<snapshotRepository>
+			<id>muleforge.webdav.snapshots</id>
+			<url>dav:https://dav.muleforge.org/snapshots.repository/${productName}</url>
+		</snapshotRepository>
+		<site>
+			<id>muleforge.webdav.sites</id>
+			<url>dav:https://dav.muleforge.org/${productName}</url>
+		</site>
+	</distributionManagement>
+
 
 	<build>
 		<plugins>
@@ -74,13 +132,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<source>${jdk.version}</source>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -122,17 +173,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+
 				<configuration>
+					<locale>en</locale>
+					<source>${jdk.version}</source>
 					<links>
-						<link>http://java.sun.com/j2ee/1.4/docs/api</link>
+						<link>http://java.sun.com/javase/6/docs/api/</link>
 						<link>http://java.sun.com/j2se/1.4.2/docs/api</link>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>http://www.mulesource.org/docs/site/2.2.1/apidocs</link>
 					</links>
-					<encoding>UTF-8</encoding>
-					<docencoding>UTF-8</docencoding>
-					<locale>en</locale>
+					<charset>ISO-8859-1</charset>
+					<encoding>ISO-8859-1</encoding>
 				</configuration>
+
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -241,6 +294,34 @@
 			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>codehaus-snapshots</id>
+			<name>Codehaus Maven 2.x Snapshots Repository</name>
+			<url>http://snapshots.repository.codehaus.org</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>apache-m2-snapshots</id>
+			<name>Apache Development Snapshot Repository</name>
+			<url>
+				http://people.apache.org/repo/m2-snapshot-repository
+			</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+ 
+		<repository>  
+			<id>apache-m2-incubating</id>  
+			<name>Apache Incubating Repository</name>  
+			<url>http://people.apache.org/repo/m2-incubating-repository/</url>  
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -252,14 +333,11 @@
 			<id>apache-plugin-snapshots</id>
 			<name>Apache Maven Plugins Snapshot Repository</name>
 			<url>
-				http://people.apache.org/maven-snapshot-repository
+				http://people.apache.org/repo/m2-snapshot-repository
 			</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
 		</pluginRepository>
 		<pluginRepository>
 			<id>apache-m2-incubator</id>
@@ -267,12 +345,6 @@
 			<url>
 				http://people.apache.org/repo/m2-incubating-repository
 			</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
 		</pluginRepository>
 
 		<pluginRepository>
@@ -286,6 +358,11 @@
 			<name>Mule Plugin Dependencies</name>
 			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
 		</pluginRepository>
+		<pluginRepository>
+			<id>codehaus snapshot repository</id>
+			<url>http://snapshots.repository.codehaus.org</url>
+		</pluginRepository>
+
 	</pluginRepositories>
 	
 	<reports>
