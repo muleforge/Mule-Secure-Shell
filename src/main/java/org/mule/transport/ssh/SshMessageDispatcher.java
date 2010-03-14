@@ -142,7 +142,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		
 		if(isUseSudo())
 		{
-			if(!execCommand.matches("^\\s*sudo"))
+			if(!execCommand.matches("^\\s*sudo.*"))
 			{
 				execCommand = "sudo " + execCommand;
 			}
