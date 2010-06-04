@@ -42,7 +42,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 {
 	private int waitTime = 1000; //before waiting time to read result.
 	private final int responseTimeout;
-	private Connection sshConn;
+	//private Connection sshConn;
 	private ExecSession session;
 	private String encoding = "UTF-8";
 	
@@ -58,20 +58,12 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 
     public void doConnect() throws Exception
     {
-    	this.sshConn = getConnector().openSshConnection(responseTimeout);
+    	//do nothing
     }
 
     public void doDisconnect() throws Exception
     {
-    	if(!session.isClosed())
-    	{
-    		session.close();
-    	}
-		if(!this.sshConn.isClosed())
-		{
-			logger.debug("ssh connection is closing...");
-			this.sshConn.close();
-		}
+    	//do nothing
     }
 
     public void doDispatch(MuleEvent event) throws Exception
@@ -105,34 +97,42 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
         // TODO Once the event has been sent, return the result (if any)
         // wrapped in a MuleMessage object
     	
+    	Connection sshConn = getConnector().openSshConnection(responseTimeout, endpoint);
+    	
 		String result = "";
 		int exitStatus = 0;
 		
 		String execCommand = buildCommand(event);
-		session = openExecSession(execCommand);
+		session = openExecSession(execCommand, sshConn);
 		
 		if(isUseSudo() && isWaitingPrompt(session)){ // will be wait to prompt password
 			//TODO checking wheither to difine "sudoPassword" property
 			writeSudoPassword(session);
 		}
 		
-
-		result = readResult(session, System.currentTimeMillis(), event);
+		BufferedInputStream in = new BufferedInputStream(session
+				.getInputStream());
+		result = readResult(session, System.currentTimeMillis(), event, in);
 		exitStatus = session.getExitStatus();
 
+		in.close();
 		session.getInputStream().close();
+		session.getOutputStream().close();
+		session.close();
+		
+		sshConn.close();
 	
 		MuleMessage message = buildMuleMessage(result, exitStatus, event.getMessage());
 		
 		return message;
     }
 
-	private ExecSession openExecSession(String execCommand)
+	private ExecSession openExecSession(String execCommand, Connection sshConn)
 			throws  IOException
 	{
 		logger.trace("open session");
 		ExecSessionOptions execSessionOptions = new ExecSessionOptions(execCommand);
-		ExecSession session = this.sshConn.openExecSession(execSessionOptions);
+		ExecSession session = sshConn.openExecSession(execSessionOptions);
 		return session;
 	}
 
@@ -154,7 +154,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 	private boolean isWaitingPrompt(ExecSession session)
 	{
 		//TODO difine magic number
-		// this code is specific jsch
+		// this code is specific to jsch.
 		return session.getExitStatus() == -1;
 	}
 
@@ -173,12 +173,10 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
     	//do nothing
     }
     
-	private String readResult(ExecSession session, long startTime, MuleEvent event) throws IOException, ResponseTimeoutException {
+	private String readResult(ExecSession session, long startTime, MuleEvent event, BufferedInputStream in) throws IOException, ResponseTimeoutException {
 		byte[] tmp = new byte[1024];
 		//StringBuilder result = new StringBuilder();
 		ByteArrayOutputStream result = new ByteArrayOutputStream(1024);
-		BufferedInputStream in = new BufferedInputStream(session
-				.getInputStream());
 
 		while (true) {
 
@@ -261,7 +259,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
         {
         	// to valid the SSH connection.
         	// this is for retry policy capabile.
-        	Connection conn = getConnector().openSshConnection(responseTimeout);
+        	Connection conn = getConnector().openSshConnection(responseTimeout, endpoint);
         	conn.close();
         	
         	retryContext.setOk();

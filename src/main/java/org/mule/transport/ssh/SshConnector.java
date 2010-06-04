@@ -21,22 +21,21 @@ import net.sf.commons.ssh.PublicKeyAuthenticationOptions;
 import net.sf.commons.ssh.jsch.JschConnectionFactory;
 
 import org.mule.api.MuleException;
+import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.transport.AbstractConnector;
 
-
 /* For general guidelines on writing transports see
-   http://mule.mulesource.org/display/MULE/Writing+Transports */
+ http://mule.mulesource.org/display/MULE/Writing+Transports */
 
 /* IMPLEMENTATION NOTE: All configuaration for the transport should be set
-   on the Connector object, this is the object that gets configured in
-   MuleXml */
+ on the Connector object, this is the object that gets configured in
+ MuleXml */
 
 /**
  * <code>SshConnector</code> TODO document
  */
-public class SshConnector extends AbstractConnector
-{
+public class SshConnector extends AbstractConnector {
 	/* This constant defines the main transport protocol identifier */
 	public static final String SSH = "ssh";
 	public static final String SSH_PREFIX = "ssh.";
@@ -51,142 +50,125 @@ public class SshConnector extends AbstractConnector
 
 	/** ex) privateKeyPath = "./conf/id_rsa" */
 	private String privateKeyPath = null;
-	
-	/** @see <a href="http://commons-ssh.sourceforge.net/apidocs/index.html"/>AuthenticationOptions</a> */
+
+	/**
+	 * @see <a
+	 *      href="http://commons-ssh.sourceforge.net/apidocs/index.html"/>AuthenticationOptions</a>
+	 */
 	private AuthenticationOptions authOptions = null;
 
 	private int kexTimeout;
 
-	/* IMPLEMENTATION NOTE: Is called once all bean properties have been
-	   set on the connector and can be used to validate and initialise the
-	   connectors state. */
-	public void doInitialise() throws InitialisationException
-	{
-		if(authOptions == null)
-		{
+	/*
+	 * IMPLEMENTATION NOTE: Is called once all bean properties have been set on
+	 * the connector and can be used to validate and initialise the connectors
+	 * state.
+	 */
+	public void doInitialise() throws InitialisationException {
+		if (authOptions == null) {
 			logger.debug("creating authentication options Object");
-			if (privateKeyPath == null)
-			{ // Password Auth
+			if (privateKeyPath == null) { // Password Auth
 				authOptions = new PasswordAuthenticationOptions(loginId,
 						new String(password));
-			}
-			else
-			{ // PublicKey Auth
+			} else { // PublicKey Auth
 				authOptions = new PublicKeyAuthenticationOptions(loginId,
-						privateKeyPath,
-						new String(password));
+						privateKeyPath, new String(password));
 				logger.trace("use private key : " + privateKeyPath);
 			}
-			
+
 			logger.trace("authenticaction options : " + authOptions.getClass());
 		}
-		
-		loginId = ""; // replace dummy id.
-		password = "".getBytes(); //replace dummy password.
+
+		// loginId = ""; // replace dummy id.
+		// password = "".getBytes(); //replace dummy password.
 	}
 
-	public ConnectionFactory getFactory(int soTimeout)
-	{
+	public ConnectionFactory getFactory(int soTimeout) {
 		ConnectionFactory factory = new JschConnectionFactory();
 		factory.setKexTimeout(kexTimeout);
 		factory.setSoTimeout(soTimeout);
 		return factory;
 	}
 
-	public void doConnect() throws Exception
-	{
-		//do nothing
-	}
-
-	public void doDisconnect() throws Exception
-	{
+	public void doConnect() throws Exception {
 		// do nothing
 	}
 
-	public void doStart() throws MuleException
-	{
-		//do nothing
-	}
-
-	public void doStop() throws MuleException
-	{
+	public void doDisconnect() throws Exception {
 		// do nothing
 	}
 
-	public void doDispose()
-	{
+	public void doStart() throws MuleException {
+		// do nothing
+	}
+
+	public void doStop() throws MuleException {
+		// do nothing
+	}
+
+	public void doDispose() {
 		// do nothing.
 	}
-	
-	Connection openSshConnection(int soTimeout) throws IOException
-	{	
-		logger.debug("open ssh connection : " + loginId + "@" + host + ":" + port);
+
+	// TODO remove soTimeout from arguments?
+	Connection openSshConnection(int soTimeout, ImmutableEndpoint endpoint)
+			throws IOException {
+
+		logger.debug("open ssh connection : " + loginId + "@" + host + ":"
+				+ port);
 		return getFactory(soTimeout).openConnection(host, port, authOptions);
 	}
-	
+
 	/* following is getter and setter */
-	public String getProtocol()
-	{
+	public String getProtocol() {
 		return SSH;
 	}
-	
-	public String getHost()
-	{
+
+	public String getHost() {
 		return host;
 	}
 
-	public void setHost(String host)
-	{
+	public void setHost(String host) {
 		this.host = host;
 	}
 
-	public int getPort()
-	{
+	public int getPort() {
 		return port;
 	}
 
-	public void setPort(int port)
-	{
+	public void setPort(int port) {
 		this.port = port;
 	}
 
-	public String getLoginId()
-	{
+	public String getLoginId() {
 		return loginId;
 	}
 
-	public void setLoginId(String loginId)
-	{
+	public void setLoginId(String loginId) {
 		this.loginId = loginId;
 	}
 
-	public void setPassword(String password)
-	{
+	public void setPassword(String password) {
 		this.password = password.getBytes();
 	}
 
-	public void setPrivateKeyPath(String privateKeyPath)
-	{
+	public void setPrivateKeyPath(String privateKeyPath) {
 		this.privateKeyPath = privateKeyPath;
 	}
 
-	public int getKexTimeout()
-	{
+	public int getKexTimeout() {
 		return kexTimeout;
 	}
 
-	public void setKexTimeout(int kexTimeout)
-	{
+	public void setKexTimeout(int kexTimeout) {
 		this.kexTimeout = kexTimeout;
 	}
-	
-	AuthenticationOptions getAuthOptions()
-	{
+
+	AuthenticationOptions getAuthOptions() {
 		return authOptions;
 	}
 
-	public void setAuthOptions(AuthenticationOptions authOptions)
-	{
+	public void setAuthOptions(AuthenticationOptions authOptions) {
 		this.authOptions = authOptions;
 	}
 }
