@@ -28,6 +28,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.retry.RetryContext;
 import org.mule.api.routing.ResponseTimeoutException;
+import org.mule.api.transport.DispatchException;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.transport.AbstractMessageDispatcher;
@@ -173,7 +174,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
     	//do nothing
     }
     
-	private String readResult(ExecSession session, long startTime, MuleEvent event, BufferedInputStream in) throws IOException, ResponseTimeoutException {
+	private String readResult(ExecSession session, long startTime, MuleEvent event, BufferedInputStream in) throws IOException, DispatchException {
 		byte[] tmp = new byte[1024];
 		//StringBuilder result = new StringBuilder();
 		ByteArrayOutputStream result = new ByteArrayOutputStream(1024);
@@ -183,14 +184,18 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 			if(responseTimeout != 0 && System.currentTimeMillis() - startTime >= responseTimeout)
 			{	//response timeout
 				in.close();
-				ResponseTimeoutException exception = new ResponseTimeoutException(CoreMessages.responseTimedOutWaitingForId(getEndpoint().getResponseTimeout(), event.getMessage().getUniqueId()), event.getMessage(), endpoint);
-				exception.addInfo("description", "SshMessageDispatcher {response timeout: " + responseTimeout + " ms}");
+				DispatchException exception = new DispatchException(event, this);
+				//ResponseTimeoutException exception = new ResponseTimeoutException(CoreMessages.responseTimedOutWaitingForId(getEndpoint().getResponseTimeout(), event.getMessage().getUniqueId()), event.getMessage(), endpoint);
+				//exception.addInfo("description", "SshMessageDispatcher {response timeout: " + responseTimeout + " ms}");
 				throw exception;
 			}
 			while (in.available() > 0) {
 				int i = in.read(tmp, 0, 1024);
 				if (i < 0) {
 					break;
+				}
+				if(logger.isTraceEnabled()){
+					logger.trace(new String(tmp));
 				}
 				//result.append(new String(tmp, 0, i));
 				result.write(tmp, 0, i);
@@ -224,7 +229,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(SshConnector.SSH_EXIT_STATUS, exitStatus);
 
-		MuleMessage message = new DefaultMuleMessage(payload, origilanMessage);
+		MuleMessage message = new DefaultMuleMessage(payload, origilanMessage, getConnector().getMuleContext());
 		message.addProperties(params, PropertyScope.OUTBOUND);
 		if(StringUtils.isEmpty(payload))
 		{

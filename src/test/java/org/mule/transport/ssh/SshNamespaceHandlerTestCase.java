@@ -13,6 +13,7 @@ package org.mule.transport.ssh;
 
 import net.sf.commons.ssh.PublicKeyAuthenticationOptions;
 
+import org.mule.MessageExchangePattern;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.tck.FunctionalTestCase;
 
@@ -60,8 +61,9 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         
         assertEquals(4000, endpoint.getResponseTimeout());
         
-        assertEquals(true, endpoint.isSynchronous());
-        
+        //deplicated ImmutableEndpoint#isSynchronous()
+        assertEquals(true, endpoint.getExchangePattern().hasResponse());
+        assertEquals(MessageExchangePattern.REQUEST_RESPONSE, endpoint.getExchangePattern());
     }
     
 }

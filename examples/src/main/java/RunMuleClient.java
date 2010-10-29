@@ -16,7 +16,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.DefaultMuleMessage;
-import org.mule.MuleMessageTestCase;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
@@ -39,18 +38,17 @@ public class RunMuleClient
 	
 	public void start() throws MuleException
 	{
-		MuleMessage response = new DefaultMuleMessage(null);
+
 		logger.info("start RunMuleClient");
 		MuleClient client = new MuleClient("./mule-ssh-sample.xml");
+		MuleMessage response = new DefaultMuleMessage("", client.getMuleContext());
 		try{
 			client.getMuleContext().start();
 	
 			Map<String, Object> properties = new HashMap<String, Object>();
 			properties.put(MuleProperties.MULE_EVENT_TIMEOUT_PROPERTY, "3000");
-			
-			response = new DefaultMuleMessage(null);
 	
-				response = client.send("vm://test", "echo hello world!", properties);
+			response = client.send("vm://test", "sudo /bin/ls", properties);
 		}catch(MuleException e){
 			e.printStackTrace();
 		}finally{

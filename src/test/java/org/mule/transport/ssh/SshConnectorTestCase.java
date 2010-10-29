@@ -43,7 +43,7 @@ public class SshConnectorTestCase extends AbstractConnectorTestCase
         /* IMPLEMENTATION NOTE: Create and initialise an instance of your
            connector here. Do not actually call the connect method. */
     	
-        SshConnector c = new SshConnector();
+        SshConnector c = new SshConnector(muleContext);
         c.setName("Test");
         c.setHost(host);
         c.setPort(port);

@@ -35,7 +35,7 @@ public class SshEndpointTestCase extends AbstractMuleTestCase
         assertEquals("tcp://localhost:7856", url.getAddress());
         assertEquals(0, url.getParams().size());
         */
-        EndpointURI uri = new MuleEndpointURI("ssh://ssh.out");
+        EndpointURI uri = new MuleEndpointURI("ssh://ssh.out", muleContext);
         //System.out.println(uri.toString());
         assertEquals("ssh", uri.getScheme());
         assertEquals("ssh://ssh.out", uri.getUri().toString());

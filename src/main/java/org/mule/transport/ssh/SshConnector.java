@@ -20,6 +20,7 @@ import net.sf.commons.ssh.PasswordAuthenticationOptions;
 import net.sf.commons.ssh.PublicKeyAuthenticationOptions;
 import net.sf.commons.ssh.jsch.JschConnectionFactory;
 
+import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
@@ -36,6 +37,11 @@ import org.mule.transport.AbstractConnector;
  * <code>SshConnector</code> TODO document
  */
 public class SshConnector extends AbstractConnector {
+	public SshConnector(MuleContext context) {
+		super(context);
+		
+	}
+
 	/* This constant defines the main transport protocol identifier */
 	public static final String SSH = "ssh";
 	public static final String SSH_PREFIX = "ssh.";
