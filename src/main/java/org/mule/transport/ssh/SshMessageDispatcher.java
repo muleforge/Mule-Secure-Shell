@@ -40,20 +40,25 @@ import org.mule.util.StringUtils;
  */
 public class SshMessageDispatcher extends AbstractMessageDispatcher
 {
-	private int waitTime = 1000; //before waiting time to read result.
+	private static final int WAIT_TIME = 1000; //before waiting time to read result.
 	private final int responseTimeout;
 	//private Connection sshConn;
-	private ExecSession session;
-	private String encoding = "UTF-8";
+//	private ExecSession session;
+	private final String encoding;
+	private final boolean sudoStdioOption;
 	
     /* For general guidelines on writing transports see
        http://mule.mulesource.org/display/MULE/Writing+Transports */
 
-    public SshMessageDispatcher(OutboundEndpoint endpoint)
+
+	public SshMessageDispatcher(OutboundEndpoint endpoint)
     {
         super(endpoint);
         responseTimeout = endpoint.getResponseTimeout();
         encoding = endpoint.getEncoding();
+        
+        String prop = (String) endpoint.getProperty("sudoStdioOption");
+        sudoStdioOption = Boolean.parseBoolean(prop);
     }
 
     public void doConnect() throws Exception
@@ -68,16 +73,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 
     public void doDispatch(MuleEvent event) throws Exception
     {
-        /* IMPLEMENTATION NOTE: This is invoked when the endpoint is
-           asynchronous.  It should invoke the transport but not return any
-           result.  If a result is returned it should be ignorred, but if the
-           underlying transport does have a notion of asynchronous processing,
-           that should be invoked.  This method is executed in a different
-           thread to the request thread. */
 
-        // TODO Write the client code here to dispatch the event over this
-        // transport
-    	
     	logger.info("dispatch command");
         doSend(event);
     }
@@ -103,7 +99,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		int exitStatus = 0;
 		
 		String execCommand = buildCommand(event);
-		session = openExecSession(execCommand, sshConn);
+		ExecSession session = openExecSession(execCommand, sshConn);
 		
 		if(isUseSudo() && isWaitingPrompt(session)){ // will be wait to prompt password
 			//TODO checking wheither to difine "sudoPassword" property
@@ -160,9 +156,15 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 
 	private void writeSudoPassword(ExecSession session) throws IOException
 	{
-		logger.trace("send sudo password");
+		logger.debug("send sudo password.");
 		OutputStream out = session.getOutputStream();
-		String password = (String) endpoint.getProperty(SshNamespaceHandler.SUDO_PASSWORD);
+		String password;
+		password = (String) endpoint.getProperty(SshNamespaceHandler.SUDO_PASSWORD) + "\n";
+		if(isSudoStdioOption())
+		{
+			logger.debug("followed by a newline charactor.");
+			password = password + "\n";
+		}
 		out.write(password.getBytes(encoding));
 		out.flush();
 		out.close();
@@ -201,7 +203,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 			try 
 			{
 				//polling while remote command is finished
-				Thread.sleep(waitTime);
+				Thread.sleep(WAIT_TIME);
 			} 
 			catch (InterruptedException e) {}
 		}
@@ -243,6 +245,10 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 	{
 		String prop = (String) endpoint.getProperty(SshNamespaceHandler.USE_SUDO);
 		return (Boolean) Boolean.parseBoolean(prop);
+	}
+	
+    public boolean isSudoStdioOption() {
+		return sudoStdioOption;
 	}
 	
 	@Override

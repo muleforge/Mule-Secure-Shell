@@ -126,14 +126,23 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="useSudo" type="mule:substitutableBoolean"
-			use="optional" >
+			use="optional" default="false">
 			<xsd:annotation>
 				<xsd:documentation>
 					weather to execute on sudo.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-
+		<xsd:attribute name="sudoStdioOption" type="mule:substitutableBoolean"
+			default="false">
+			<xsd:annotation>
+				<xsd:documentation>
+					If you add sudo "-S" option, input password followed by a newline character.
+					false : input password without a newline character.
+					true : input password followed by a newline character.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
     </xsd:attributeGroup>
 
 </xsd:schema>

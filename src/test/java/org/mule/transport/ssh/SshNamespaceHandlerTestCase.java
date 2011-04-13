@@ -62,6 +62,8 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         
         assertEquals(true, endpoint.isSynchronous());
         
+        assertEquals(Boolean.TRUE.toString(), endpoint.getProperty("sudoStdioOption"));
+        
     }
     
 }

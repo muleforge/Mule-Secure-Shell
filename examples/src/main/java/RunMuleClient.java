@@ -50,7 +50,7 @@ public class RunMuleClient
 			
 			response = new DefaultMuleMessage(null);
 	
-				response = client.send("vm://test", "echo hello world!", properties);
+				response = client.send("vm://test", "sudo -S ls -a", properties);
 		}catch(MuleException e){
 			e.printStackTrace();
 		}finally{

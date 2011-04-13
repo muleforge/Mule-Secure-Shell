@@ -37,7 +37,7 @@
 			<echo-component/>
 			<outbound>
 				<pass-through-router>
-					<ssh:outbound-endpoint name="ssh-out" ssh="SEND" useSudo="true" 
+					<ssh:outbound-endpoint name="ssh-out" ssh="SEND" useSudo="true" sudoStdioOption="true"
 						sudoPassword="sudopwd" responseTimeout="10000" synchronous="true" />
 				</pass-through-router>
 			</outbound>
