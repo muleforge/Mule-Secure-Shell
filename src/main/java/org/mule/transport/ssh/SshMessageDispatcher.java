@@ -56,7 +56,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
         responseTimeout = endpoint.getResponseTimeout();
         encoding = endpoint.getEncoding();
         
-        String prop = (String) endpoint.getProperty("sudoStdioOption");
+        String prop = (String) endpoint.getProperty(SshNamespaceHandler.SUDO_STDIO_OPTION);
         sudoStdioOption = Boolean.parseBoolean(prop);
     }
 
