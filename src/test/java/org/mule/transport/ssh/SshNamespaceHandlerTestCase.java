@@ -15,6 +15,7 @@ import net.sf.commons.ssh.PublicKeyAuthenticationOptions;
 
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.tck.FunctionalTestCase;
+import org.mule.transport.ssh.config.SshNamespaceHandler;
 
 /**
  * TODO write document
@@ -51,18 +52,18 @@ public class SshNamespaceHandlerTestCase extends FunctionalTestCase
         
         OutboundEndpoint endpoint = (OutboundEndpoint) muleContext.getRegistry().lookupObject("ssh-out");
         
-        assertEquals(Boolean.TRUE.toString(), endpoint.getProperty("useSudo"));
+        assertEquals(Boolean.TRUE.toString(), endpoint.getProperty(SshNamespaceHandler.USE_SUDO));
         
         //valid to replace from 'ssh="SEND"' to 'address="ssh://ssh.out"'
         assertEquals("ssh.out", endpoint.getEndpointURI().getAddress());
         
-        assertEquals("sudopwd", endpoint.getProperty("sudoPassword"));
+        assertEquals("sudopwd", endpoint.getProperty(SshNamespaceHandler.SUDO_PASSWORD));
         
         assertEquals(4000, endpoint.getResponseTimeout());
         
         assertEquals(true, endpoint.isSynchronous());
         
-        assertEquals(Boolean.FALSE.toString(), endpoint.getProperty("sudoStdioOption"));
+        assertEquals(Boolean.FALSE.toString(), endpoint.getProperty(SshNamespaceHandler.SUDO_STDIO_OPTION));
         
     }
     

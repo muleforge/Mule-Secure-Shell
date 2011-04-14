@@ -134,7 +134,7 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="sudoStdioOption" type="mule:substitutableBoolean"
-			default="false">
+			use="optional" default="false">
 			<xsd:annotation>
 				<xsd:documentation>
 					If you add sudo "-S" option, input password followed by a newline character.

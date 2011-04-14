@@ -35,7 +35,7 @@ public class SshNamespaceHandler extends AbstractMuleNamespaceHandler
 
 	public static final String SUDO_PASSWORD = "sudoPassword";
 	public static final String USE_SUDO = "useSudo";
-
+	public static final String SUDO_STDIO_OPTION = "sudoStdioOption";
 
 	public static final String[] ENDPOINT_ATTRIBUTES = {
 			SUDO_PASSWORD, USE_SUDO, RESOPNSE_TIMEOUT
@@ -43,7 +43,7 @@ public class SshNamespaceHandler extends AbstractMuleNamespaceHandler
 	public static final String[] ALL_ATTRIBUTES = {
 			HOST, PORT, LOGIN_ID, PASSWORD,
 			PRIVATE_KEY_PATH, RESOPNSE_TIMEOUT, KEX_TIMEOUT,
-			SUDO_PASSWORD, USE_SUDO
+			SUDO_PASSWORD, USE_SUDO, SUDO_STDIO_OPTION
 			};
 
 	public void init()
@@ -56,6 +56,7 @@ public class SshNamespaceHandler extends AbstractMuleNamespaceHandler
 		registerStandardTransportEndpoints(SshConnector.SSH, ADDRESS_ATTRIBUTES)
 				.addMapping(SSH_ATTRIBUTE, MAPPINGS).addAlias(SSH_ATTRIBUTE, URIBuilder.PATH)
 				.addAlias(USE_SUDO, USE_SUDO)
+				.addAlias(SUDO_STDIO_OPTION, SUDO_STDIO_OPTION)
 				.addAlias(SUDO_PASSWORD, SUDO_PASSWORD)
 				.addAlias(RESOPNSE_TIMEOUT, AbstractEndpointBuilder.PROPERTY_RESPONSE_TIMEOUT);
 	       //registerBeanDefinitionParser("outbound-endpoint", new GenericEndpointDefinitionParser(OutboundEndpointFactoryBean.class));
