@@ -42,8 +42,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 {
 	private static final int WAIT_TIME = 1000; //before waiting time to read result.
 	private final int responseTimeout;
-	//private Connection sshConn;
-//	private ExecSession session;
+
 	private final String encoding;
 	private final boolean sudoStdioOption;
 	
@@ -117,7 +116,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		session.close();
 		
 		sshConn.close();
-	
+		
 		MuleMessage message = buildMuleMessage(result, exitStatus, event.getMessage());
 		
 		return message;
@@ -138,10 +137,19 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		
 		if(isUseSudo())
 		{
-			if(!execCommand.matches("^\\s*sudo.*"))
+			String sudoCommand = execCommand;
+			if(!sudoCommand.matches("^\\s*sudo.*"))
 			{
-				execCommand = "sudo " + execCommand;
+				if(isSudoStdioOption())
+				{
+					sudoCommand = "sudo -S " + sudoCommand;
+				}
+				else
+				{
+					sudoCommand = "sudo " + sudoCommand;
+				}
 			}
+			execCommand = sudoCommand;
 		}
 		logger.debug("exec command : \"" + execCommand + "\"");
 		return execCommand;
@@ -159,7 +167,7 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 		logger.debug("send sudo password.");
 		OutputStream out = session.getOutputStream();
 		String password;
-		password = (String) endpoint.getProperty(SshNamespaceHandler.SUDO_PASSWORD) + "\n";
+		password = (String) endpoint.getProperty(SshNamespaceHandler.SUDO_PASSWORD);
 		if(isSudoStdioOption())
 		{
 			logger.debug("followed by a newline charactor.");
@@ -194,7 +202,6 @@ public class SshMessageDispatcher extends AbstractMessageDispatcher
 				if (i < 0) {
 					break;
 				}
-				//result.append(new String(tmp, 0, i));
 				result.write(tmp, 0, i);
 			}
 			if(session.isClosed()){
